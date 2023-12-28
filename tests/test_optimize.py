@@ -56,7 +56,7 @@ def call_ChatGPT(cur_prompt, stop = None, max_tokens = 20, temperature = 0.2, gp
         stop=stop,
         messages=cur_prompt,
         temperature=temperature)
-    return ans['choices'][0]['message']['content']
+    return ans.choices[0].message.content
     return response_text
 
 def call_gpt(cur_prompt: str, stop: str, max_tokens = 20, quality = "best", temperature = 0.0, model = "text-davinci-003"):
@@ -107,7 +107,7 @@ def run_test_stub():
     openai_api_key = os.getenv('LLM_VM_OPENAI_API_KEY')
     openai.api_key =openai_api_key
     # anarchy_key = os.getenv('LLM_VM_ANARCHY_KEY')
-    print("key:", openai.api_key[0:5])
+    print("key:", openai.api_key[0:5], file=sys.stderr)
     optimizer = LocalOptimizer(MIN_TRAIN_EXS=1,openai_key=openai_api_key)
     #optimizer = HostedOptimizer(openai_key = openai.api_key,
     #                            anarchy_key = anarchy_key,

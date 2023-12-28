@@ -1,5 +1,4 @@
 import re
-import openai
 import random
 from llm_vm.utils.typings_llm import *
 from llm_vm.agents.FLAT.agent_helper.requests.call_llm import call_llm
@@ -105,7 +104,7 @@ def pick_tool(tools_list, question, conversation_history, use_fine_tuned_model =
         return suggested_tool_id, price
     except Exception as e:
         print_big(f'Exception parsing tool_id: "{suggested_tool_str}"')
-        print(e, flush=True)
+        print(e, flush=True, file=sys.stderr)
         return DefaultTools.I_DONT_KNOW.value, price
 
 

@@ -17,7 +17,7 @@ def flatten(a):
 
 
 def print_op(*kargs, **kwargs):
-    print(*kargs, **kwargs, flush=True)
+    print(*kargs, **kwargs, flush=True, file=sys.stderr)
 
 
 def prepPrintPromptContext(p):
@@ -47,13 +47,11 @@ def call_ChatGPT(state, cur_prompt, stop=None, max_tokens=20, temperature=0.2):
 
     cost = calcCost(cur_prompt)
     try:
-        ans = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0301",
-            max_tokens=max_tokens,
-            stop=stop,
-            messages=cur_prompt,
-            temperature=temperature,
-        )
+        ans = openai.chat.completions.create(model="gpt-3.5-turbo-0301",
+        max_tokens=max_tokens,
+        stop=stop,
+        messages=cur_prompt,
+        temperature=temperature)
 
     except Exception as e:
         state.price += cost
@@ -103,13 +101,11 @@ def call_gpt(
     cost = calcCost(cur_prompt)
 
     try:
-        ans = openai.Completion.create(
-            model=model[0],
-            max_tokens=max_tokens,
-            stop=stop,
-            prompt=cur_prompt,
-            temperature=temperature,
-        )
+        ans = openai.completions.create(model=model[0],
+        max_tokens=max_tokens,
+        stop=stop,
+        prompt=cur_prompt,
+        temperature=temperature)
     except Exception as e:
         print_op("WTF:", e)
         state.price += cost
@@ -218,7 +214,7 @@ def tool_api_call(self, tool, gpt_suggested_input, question, memory, facts, quer
 
     ret = str(resp.text)
     if self.verbose > 4:
-        print(ret)
+        print(ret, file=sys.stderr)
     try:
         ret = str(json.loads(ret))
     except:

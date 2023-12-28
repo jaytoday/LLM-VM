@@ -1,4 +1,5 @@
 import json
+import sys
 import openai
 import time
 import os
@@ -38,23 +39,21 @@ def upload_model (
             "elapsed_time_s": int(time.time() - start_of_execution)
         }
 
-    upload_response = openai.File.create(
-        file=open(file_path, "rb"),
-        purpose='fine-tune'
-    )
+    upload_response = openai.files.create(file=open(file_path, "rb"),
+    purpose='fine-tune')
 
     file_id = upload_response.id
 
-    fine_tune_response = openai.FineTune.create(training_file=file_id, model=openai_model)
-    job_id = fine_tune_response["id"]
-    print(__START_LABEL, f'''job_id: {job_id}, model: {file_name}''', flush=True)
+    fine_tune_response = openai.fine_tunes.create(training_file=file_id, model=openai_model)
+    job_id = fine_tune_response.id
+    print(__START_LABEL, f'''job_id: {job_id}, model: {file_name}''', flush=True, file=sys.stderr)
 
     finetuned_model = {"status": None}
     while finetuned_model["status"] not in ["succeeded", "failed"]:
         time.sleep(15)
         finetuned_model = check_model_status(job_id, progress_label(__PROGRESS_LABEL))
 
-    print(progress_label(__FINISHED_LABEL), finetuned_model["fine_tuned_model"], flush=True)
+    print(progress_label(__FINISHED_LABEL), finetuned_model["fine_tuned_model"], flush=True, file=sys.stderr)
 
     related_files = (
         [file["id"] for file in finetuned_model["result_files"]] + \
